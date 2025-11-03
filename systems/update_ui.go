@@ -94,7 +94,9 @@ func (s *UpdateUI) clearCompleted(w *ecs.World) {
 }
 
 func (s *UpdateUI) clearEditor() {
-	s.uiRes.Get().UIWidgets.Editor.SetText("")
+	ui := s.uiRes.Get()
+	ui.UIWidgets.Editor.SetText("")
+	ui.UIState.IsDirty = true
 }
 
 func (s *UpdateUI) appendPendingTodo(w *ecs.World, text string) {
@@ -109,6 +111,7 @@ func (s *UpdateUI) appendPendingTodo(w *ecs.World, text string) {
 func (s *UpdateUI) setCurrentView(w *ecs.World, view components.ViewState) {
 	uiState := s.uiRes.Get().UIState
 	uiState.CurrentView = view
+	uiState.IsDirty = true
 }
 
 func (r *UpdateUI) getToggleClickableForTodo(todoId string) *widget.Clickable {

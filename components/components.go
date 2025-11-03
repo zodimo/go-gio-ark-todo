@@ -25,47 +25,21 @@ const (
 
 // UIState component - holds UI-related state
 type UIState struct {
-	InputText string
-
-	CurrentView                ViewState
-	AddTodoSubmitButtonClicked bool
-	NewTodoSubmitted           bool
-
-	ViewAllTodoClicked       bool
-	ViewActiveTodoClicked    bool
-	ViewCompletedTodoClicked bool
-
-	DeleteTodoClicked bool
-
+	CurrentView           ViewState
 	ClearCompletedClicked bool
-
-	PendingTodos []string
-
-	PendingToggleTodo *PendingToggleTodo
+	PendingTodos          []string
+	PendingToggleTodo     *PendingToggleTodo
 
 	IsDirty bool
 }
 
 func NewUIState() *UIState {
 	return &UIState{
-		InputText: "",
-
-		CurrentView:                ViewAll,
-		AddTodoSubmitButtonClicked: false,
-		NewTodoSubmitted:           false,
-
-		ViewAllTodoClicked:       false,
-		ViewActiveTodoClicked:    false,
-		ViewCompletedTodoClicked: false,
-
-		DeleteTodoClicked: false,
-
+		CurrentView:           ViewAll,
 		ClearCompletedClicked: false,
-
-		PendingTodos: []string{},
-
-		PendingToggleTodo: nil,
-		IsDirty:           true,
+		PendingTodos:          []string{},
+		PendingToggleTodo:     nil,
+		IsDirty:               true,
 	}
 }
 
