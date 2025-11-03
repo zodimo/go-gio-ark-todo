@@ -19,13 +19,9 @@ type C = layout.Context
 type D = layout.Dimensions
 
 type TodoApp struct {
-	App *arkApp.App
-	// LogicSystems  []LogicSystem  // Systems for logic.
-	// RenderSystems []RenderSystem // Systems for rendering.
+	App    *arkApp.App
 	window *app.Window
-
-	// worldService shared.ServiceAPI
-	ctx context.Context
+	ctx    context.Context
 
 	settings *components.Settings
 }
@@ -35,12 +31,9 @@ func NewTodoApp(window *app.Window) *TodoApp {
 	th := material.NewTheme()
 	th.Shaper = text.NewShaper(text.WithCollection(gofont.Collection()))
 
-	// worldService := shared.NewService(true)
-
 	a := &TodoApp{
 		window: window,
-		// worldService: worldService,
-		ctx: context.Background(),
+		ctx:    context.Background(),
 	}
 
 	a.App = arkApp.New()
