@@ -98,6 +98,10 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 		// Default case
 	}
 
+	allTodosCount := uiState.TotalTodos
+	completedTodosCount := uiState.TotalCompletedTodos
+	activeTodosCount := allTodosCount - completedTodosCount
+
 	return layout.Flex{
 		Axis: layout.Vertical,
 	}.Layout(gtx,
@@ -139,7 +143,7 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 				return layout.Flex{}.Layout(gtx,
 					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 
-						btn := material.Button(uiWidgets.Theme, uiWidgets.AllFilter, "All")
+						btn := material.Button(uiWidgets.Theme, uiWidgets.AllFilter, fmt.Sprintf("All (%d)", allTodosCount))
 						if uiState.CurrentView == components.ViewAll {
 							btn.Background = color.NRGBA{R: 100, G: 150, B: 200, A: 255}
 						}
@@ -147,7 +151,7 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 					}),
 					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 
-						btn := material.Button(uiWidgets.Theme, uiWidgets.ActiveFilter, "Active")
+						btn := material.Button(uiWidgets.Theme, uiWidgets.ActiveFilter, fmt.Sprintf("Active (%d)", activeTodosCount))
 						if uiState.CurrentView == components.ViewActive {
 							btn.Background = color.NRGBA{R: 100, G: 150, B: 200, A: 255}
 						}
@@ -155,7 +159,7 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 					}),
 					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 
-						btn := material.Button(uiWidgets.Theme, uiWidgets.CompletedFilter, "Completed")
+						btn := material.Button(uiWidgets.Theme, uiWidgets.CompletedFilter, fmt.Sprintf("Completed (%d)", completedTodosCount))
 						if uiState.CurrentView == components.ViewCompleted {
 							btn.Background = color.NRGBA{R: 100, G: 150, B: 200, A: 255}
 						}
@@ -165,7 +169,7 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 						return layout.Dimensions{}
 					}),
 					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-						btn := material.Button(uiWidgets.Theme, uiWidgets.ClearCompletedButton, "Clear Completed")
+						btn := material.Button(uiWidgets.Theme, uiWidgets.ClearCompletedButton, fmt.Sprintf("Clear Completed (%d)", completedTodosCount))
 						if uiState.ClearCompletedClicked {
 							btn.Background = color.NRGBA{R: 100, G: 150, B: 200, A: 255}
 						}

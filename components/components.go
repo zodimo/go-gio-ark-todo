@@ -31,6 +31,9 @@ type UIState struct {
 	PendingToggleTodo     *PendingToggleTodo
 
 	IsDirty bool
+
+	TotalTodos          int
+	TotalCompletedTodos int
 }
 
 func NewUIState() *UIState {
@@ -40,6 +43,8 @@ func NewUIState() *UIState {
 		PendingTodos:          []string{},
 		PendingToggleTodo:     nil,
 		IsDirty:               true,
+		TotalTodos:            0,
+		TotalCompletedTodos:   0,
 	}
 }
 
