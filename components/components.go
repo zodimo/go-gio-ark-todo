@@ -29,6 +29,7 @@ type UIState struct {
 	ClearCompletedClicked bool
 	PendingTodos          []string
 	PendingToggleTodo     *PendingToggleTodo
+	PendingRemoveTodo     *PendingRemoveTodo
 
 	IsDirty bool
 
@@ -42,6 +43,7 @@ func NewUIState() *UIState {
 		ClearCompletedClicked: false,
 		PendingTodos:          []string{},
 		PendingToggleTodo:     nil,
+		PendingRemoveTodo:     nil,
 		IsDirty:               true,
 		TotalTodos:            0,
 		TotalCompletedTodos:   0,
@@ -69,6 +71,10 @@ type TodoState struct {
 	State todoITemState
 }
 
+type PendingRemoveTodo struct {
+	TodoID string
+}
+
 type PendingToggleTodo struct {
 	TodoID      string
 	IsCompleted bool
@@ -78,6 +84,7 @@ type UIWidgets struct {
 	Theme *material.Theme
 
 	TodoToggleButtons map[string]*widget.Clickable
+	TodoRemoveButtons map[string]*widget.Clickable
 
 	Editor               *widget.Editor
 	AddButton            *widget.Clickable
@@ -94,8 +101,10 @@ func NewUIWidgets(theme *material.Theme) *UIWidgets {
 	editor.Submit = true
 
 	return &UIWidgets{
-		Theme:                theme,
-		TodoToggleButtons:    make(map[string]*widget.Clickable),
+		Theme:             theme,
+		TodoToggleButtons: make(map[string]*widget.Clickable),
+		TodoRemoveButtons: make(map[string]*widget.Clickable),
+
 		Editor:               editor,
 		AddButton:            &widget.Clickable{},
 		ClearCompletedButton: &widget.Clickable{},

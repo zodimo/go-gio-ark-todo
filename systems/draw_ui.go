@@ -6,6 +6,8 @@ import (
 
 	"github.com/zodimo/go-gio-ark-todo/components"
 
+	"golang.org/x/exp/shiny/materialdesign/icons"
+
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/text"
@@ -215,9 +217,26 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 
 								// Make the entire row clickable
 								// return ts.todoButtons[i].Layout(gtx, label.Layout)
-								toggleBtn := d.getToggleClickableForTodo(todoItem.Todo.ID)
-								return toggleBtn.Layout(gtx, label.Layout)
-								// return label.Layout(gtx)
+								toggleBtn := ui.GetToggleClickableForTodo(todoItem.Todo.ID)
+
+								removeIcon, _ := widget.NewIcon(icons.AVStop)
+								removeBtnClickable := ui.GetRemoveClickableForTodo(todoItem.Todo.ID)
+								removeBtnWidget := material.IconButton(uiWidgets.Theme, removeBtnClickable, removeIcon, "")
+								removeBtnWidget.Size = unit.Dp(15)
+								removeBtnWidget.Inset = layout.UniformInset(unit.Dp(5))
+								removeBtnWidget.Background = color.NRGBA{R: 255, G: 0, B: 0, A: 255}
+
+								return layout.Flex{
+									Axis: layout.Horizontal,
+								}.Layout(gtx,
+									layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+										return toggleBtn.Layout(gtx, label.Layout)
+									}),
+									layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+										return removeBtnWidget.Layout(gtx)
+									}),
+								)
+
 							}),
 						)
 					})
@@ -227,21 +246,6 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 		}),
 	)
 
-}
-
-func (d *DrawUI) getToggleClickableForTodo(todoId string) *widget.Clickable {
-	uiWidgets := d.uiRes.Get().UIWidgets
-	if uiWidgets.TodoToggleButtons == nil {
-		fmt.Println("Initialize toggle buttons")
-		uiWidgets.TodoToggleButtons = make(map[string]*widget.Clickable)
-	}
-	if btn, exists := uiWidgets.TodoToggleButtons[todoId]; exists {
-		return btn
-	}
-	fmt.Printf("createing toggle button for todo %s\n", todoId)
-	newBtn := &widget.Clickable{}
-	uiWidgets.TodoToggleButtons[todoId] = newBtn
-	return newBtn
 }
 
 func (d *DrawUI) isTodoCompleted(TodoId string) bool {

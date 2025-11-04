@@ -55,6 +55,7 @@ func NewTodoApp(window *app.Window) *TodoApp {
 	}))
 	a.App.AddSystem(NewTogglePendingTodo())
 	a.App.AddSystem(NewRemoveCompleted())
+	a.App.AddSystem(NewRemoveTodo())
 	a.App.AddSystem(NewTodoStats())
 	a.App.AddSystem(NewUpdateUI())
 	a.App.AddUISystem(NewDrawUI())

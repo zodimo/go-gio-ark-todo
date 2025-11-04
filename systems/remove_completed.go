@@ -27,13 +27,23 @@ func (s *RemoveCompleted) Update(w *ecs.World) {
 	if ui.UIState.ClearCompletedClicked {
 		query := s.filter.Query()
 		entities := []ecs.Entity{}
+		todoIds := []string{}
 		for query.Next() {
 			entities = append(entities, query.Entity())
+
+			todo, _ := query.Get()
+			todoIds = append(todoIds, todo.ID)
 		}
+		query.Close()
+
 		for _, entity := range entities {
 			w.RemoveEntity(entity)
 		}
 		ui.UIState.ClearCompletedClicked = false
+
+		for _, todoId := range todoIds {
+			ui.DeleteClickableForTodo(todoId)
+		}
 	}
 }
 func (s *RemoveCompleted) Finalize(w *ecs.World) {

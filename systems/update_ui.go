@@ -68,18 +68,34 @@ func (s *UpdateUI) Update(w *ecs.World) {
 	// Handle todo toggle clicks
 	query := s.allTodosfilter.Query()
 
-	todoIdButtonClicked := ""
+	todoIToggledButtonClicked := ""
+	todoRemoveButtonClicked := ""
+
 	for query.Next() {
 		todo := query.Get()
-		toggleBtn := s.getToggleClickableForTodo(todo.ID)
+		toggleBtn := ui.GetToggleClickableForTodo(todo.ID)
+		removeBtn := ui.GetRemoveClickableForTodo(todo.ID)
 		if toggleBtn.Clicked(gtx) {
-			todoIdButtonClicked = todo.ID
-
+			todoIToggledButtonClicked = todo.ID
+		}
+		if removeBtn.Clicked(gtx) {
+			todoRemoveButtonClicked = todo.ID
 		}
 	}
-	if todoIdButtonClicked != "" {
-		// r.toggleTodo(w, todoIdButtonClicked)
-		s.toggleTodo(w, todoIdButtonClicked)
+	if todoIToggledButtonClicked != "" {
+		uiState := s.uiRes.Get().UIState
+		uiState.PendingToggleTodo = &components.PendingToggleTodo{
+			TodoID:      todoIToggledButtonClicked,
+			IsCompleted: !s.isTodoCompleted(todoIToggledButtonClicked),
+		}
+		uiState.IsDirty = true
+		s.toggleTodo(w, todoIToggledButtonClicked)
+	} else if todoRemoveButtonClicked != "" {
+		uiState := s.uiRes.Get().UIState
+		uiState.PendingRemoveTodo = &components.PendingRemoveTodo{
+			TodoID: todoRemoveButtonClicked,
+		}
+		uiState.IsDirty = true
 	}
 }
 
@@ -114,30 +130,17 @@ func (s *UpdateUI) setCurrentView(w *ecs.World, view components.ViewState) {
 	uiState.IsDirty = true
 }
 
-func (r *UpdateUI) getToggleClickableForTodo(todoId string) *widget.Clickable {
-	ui := r.uiRes.Get().UIWidgets
-	if ui.TodoToggleButtons == nil {
-		ui.TodoToggleButtons = make(map[string]*widget.Clickable)
-	}
-	if btn, exists := ui.TodoToggleButtons[todoId]; exists {
-		return btn
-	}
-	newBtn := &widget.Clickable{}
-	ui.TodoToggleButtons[todoId] = newBtn
-	return newBtn
-}
-
-func (r *UpdateUI) toggleTodo(w *ecs.World, todoId string) {
+func (s *UpdateUI) toggleTodo(w *ecs.World, todoId string) {
 
 	// Remove completed component
-	query := r.allTodosfilter.Query()
+	query := s.allTodosfilter.Query()
 
 	var pendingToggle *components.PendingToggleTodo
 
 	for query.Next() {
 		todo := query.Get()
 		if todo.ID == todoId {
-			isCompleted := r.isTodoCompleted(todo.ID)
+			isCompleted := s.isTodoCompleted(todo.ID)
 			pendingToggle = &components.PendingToggleTodo{
 				TodoID:      todoId,
 				IsCompleted: isCompleted,
@@ -149,7 +152,7 @@ func (r *UpdateUI) toggleTodo(w *ecs.World, todoId string) {
 		return
 	}
 
-	uiState := r.uiRes.Get().UIState
+	uiState := s.uiRes.Get().UIState
 	localCopy := *pendingToggle
 	uiState.PendingToggleTodo = &localCopy
 	uiState.IsDirty = true
