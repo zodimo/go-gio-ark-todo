@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"image/color"
 
+	"gioui.org/x/component"
 	"github.com/zodimo/go-gio-ark-todo/components"
-
-	"golang.org/x/exp/shiny/materialdesign/icons"
+	"github.com/zodimo/go-gio-ark-todo/icon"
 
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/text"
 	"gioui.org/unit"
-	"gioui.org/widget"
 	"gioui.org/widget/material"
 	"github.com/mlange-42/ark-tools/app"
 	"github.com/mlange-42/ark/ecs"
@@ -130,8 +129,14 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 					}),
 					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 
-						btn := material.Button(uiWidgets.Theme, uiWidgets.AddButton, "Add")
-						return layout.Inset{Left: unit.Dp(10)}.Layout(gtx, btn.Layout)
+						bg := uiWidgets.Theme.Palette.ContrastBg
+						fg := uiWidgets.Theme.Palette.ContrastFg
+
+						addBtn := component.SimpleIconButton(bg, fg, uiWidgets.AddButton, icon.AddIcon)
+						addBtn.Size = unit.Dp(20)
+						addBtn.Inset = layout.UniformInset(unit.Dp(10))
+
+						return layout.Inset{Left: unit.Dp(10)}.Layout(gtx, addBtn.Layout)
 					}),
 				)
 			})
@@ -216,15 +221,14 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 								}
 
 								// Make the entire row clickable
-								// return ts.todoButtons[i].Layout(gtx, label.Layout)
 								toggleBtn := ui.GetToggleClickableForTodo(todoItem.Todo.ID)
 
-								removeIcon, _ := widget.NewIcon(icons.AVStop)
 								removeBtnClickable := ui.GetRemoveClickableForTodo(todoItem.Todo.ID)
-								removeBtnWidget := material.IconButton(uiWidgets.Theme, removeBtnClickable, removeIcon, "")
-								removeBtnWidget.Size = unit.Dp(15)
-								removeBtnWidget.Inset = layout.UniformInset(unit.Dp(5))
-								removeBtnWidget.Background = color.NRGBA{R: 255, G: 0, B: 0, A: 255}
+								fg := color.NRGBA{R: 255, G: 0, B: 0, A: 255}
+								bg := color.NRGBA{R: 255, G: 255, B: 255, A: 255}
+								removeBtn := component.SimpleIconButton(bg, fg, removeBtnClickable, icon.DeleteIcon)
+								removeBtn.Size = unit.Dp(20)
+								removeBtn.Inset = layout.UniformInset(unit.Dp(1))
 
 								return layout.Flex{
 									Axis: layout.Horizontal,
@@ -233,7 +237,7 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 										return toggleBtn.Layout(gtx, label.Layout)
 									}),
 									layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-										return removeBtnWidget.Layout(gtx)
+										return removeBtn.Layout(gtx)
 									}),
 								)
 
