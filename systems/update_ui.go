@@ -16,7 +16,7 @@ type UpdateUI struct {
 	gtxRes ecs.Resource[layout.Context]
 
 	allTodosfilter      *ecs.Filter1[components.Todo]
-	completedTdosfilter *ecs.Filter2[components.Todo, components.TodoCompleted]
+	completedTdosfilter *ecs.Filter1[components.Todo]
 }
 
 func NewUpdateUI() *UpdateUI {
@@ -27,7 +27,7 @@ func (s *UpdateUI) Initialize(w *ecs.World) {
 	s.uiRes = ecs.NewResource[components.UI](w)
 	s.gtxRes = ecs.NewResource[layout.Context](w)
 	s.allTodosfilter = ecs.NewFilter1[components.Todo](w)
-	s.completedTdosfilter = ecs.NewFilter2[components.Todo, components.TodoCompleted](w)
+	s.completedTdosfilter = ecs.NewFilter1[components.Todo](w).With(ecs.C[components.TodoCompleted]())
 }
 
 func (s *UpdateUI) Update(w *ecs.World) {
@@ -163,7 +163,7 @@ func (d *UpdateUI) isTodoCompleted(TodoId string) bool {
 	query := d.completedTdosfilter.Query()
 	var result bool
 	for query.Next() {
-		todo, _ := query.Get()
+		todo := query.Get()
 		if todo.ID == TodoId {
 			result = true
 			break

@@ -24,7 +24,8 @@ type DrawUI struct {
 	gtxRes ecs.Resource[layout.Context]
 
 	allTodosfilter      *ecs.Filter1[components.Todo]
-	completedTdosfilter *ecs.Filter2[components.Todo, components.TodoCompleted]
+	completedTdosfilter *ecs.Filter1[components.Todo]
+	activeTodosfilter   *ecs.Filter1[components.Todo]
 }
 
 func NewDrawUI() *DrawUI {
@@ -36,7 +37,8 @@ func (d *DrawUI) InitializeUI(w *ecs.World) {
 	d.gtxRes = ecs.NewResource[layout.Context](w)
 
 	d.allTodosfilter = ecs.NewFilter1[components.Todo](w)
-	d.completedTdosfilter = ecs.NewFilter2[components.Todo, components.TodoCompleted](w)
+	d.completedTdosfilter = ecs.NewFilter1[components.Todo](w).With(ecs.C[components.TodoCompleted]())
+	d.activeTodosfilter = ecs.NewFilter1[components.Todo](w).Without(ecs.C[components.TodoCompleted]())
 }
 
 func (d *DrawUI) UpdateUI(w *ecs.World) {
@@ -80,19 +82,17 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 
 	case components.ViewActive:
 		// Render active todos
-		query := d.allTodosfilter.Query()
+		query := d.activeTodosfilter.Query()
 		for query.Next() {
 			todo := query.Get()
-			if !d.isTodoCompleted(todo.ID) {
-				todos = append(todos, components.TodoItem{Todo: *todo})
-			}
+			todos = append(todos, components.TodoItem{Todo: *todo})
 
 		}
 	case components.ViewCompleted:
 		// Render completed todos
 		query := d.completedTdosfilter.Query()
 		for query.Next() {
-			todo, _ := query.Get()
+			todo := query.Get()
 			todos = append(todos, components.TodoItem{Todo: *todo, IsCompleted: true})
 		}
 	default:
@@ -256,7 +256,7 @@ func (d *DrawUI) isTodoCompleted(TodoId string) bool {
 	query := d.completedTdosfilter.Query()
 	var result bool
 	for query.Next() {
-		todo, _ := query.Get()
+		todo := query.Get()
 		if todo.ID == TodoId {
 			result = true
 			break
