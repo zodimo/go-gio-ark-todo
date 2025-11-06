@@ -255,15 +255,17 @@ func (d *DrawUI) Layout(w *ecs.World, gtx C) D {
 func (d *DrawUI) isTodoCompleted(TodoId string) bool {
 	query := d.completedTdosfilter.Query()
 	var result bool
+	breakEarly := false
 	for query.Next() {
 		todo := query.Get()
 		if todo.ID == TodoId {
 			result = true
+			breakEarly = true
 			break
 		}
 
 	}
-	if result {
+	if breakEarly {
 		// close the world lock because we break early
 		query.Close()
 	}

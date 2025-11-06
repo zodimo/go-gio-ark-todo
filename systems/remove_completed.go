@@ -34,7 +34,6 @@ func (s *RemoveCompleted) Update(w *ecs.World) {
 			todo, _ := query.Get()
 			todoIds = append(todoIds, todo.ID)
 		}
-		query.Close()
 
 		for _, entity := range entities {
 			w.RemoveEntity(entity)
